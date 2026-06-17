@@ -846,10 +846,6 @@ function Footer() {
               Українська технологія електрозварювання живих тканин для сучасної хірургії.
             </p>
           </div>
-            <p className="mt-6 max-w-xs text-sm text-ink-soft">
-              Українська технологія електрозварювання живих тканин для сучасної хірургії.
-            </p>
-          </div>
           <div className="md:col-span-3">
             <h4 className="font-display text-sm text-ink">Контакти</h4>
             <ul className="mt-4 space-y-2 text-sm text-ink-soft">
