@@ -838,12 +838,14 @@ function Footer() {
       <div className="mx-auto max-w-[1440px]">
         <div className="grid gap-10 md:grid-cols-12">
           <div className="md:col-span-4">
-            <div className="flex items-center gap-2">
-              <span className="grid h-8 w-8 place-items-center rounded-sm bg-ink text-bone">
-                <span className="block h-2 w-2 rotate-45 bg-bone" />
-              </span>
-              <span className="font-display text-base text-ink">SVARMED</span>
+            <div className="flex items-center gap-3">
+              <LogoMark className="h-7 w-7 text-ink" />
+              <span className="font-display text-base font-extrabold tracking-[0.18em] text-ink">SVARMED</span>
             </div>
+            <p className="mt-6 max-w-xs text-sm text-ink-soft">
+              Українська технологія електрозварювання живих тканин для сучасної хірургії.
+            </p>
+          </div>
             <p className="mt-6 max-w-xs text-sm text-ink-soft">
               Українська технологія електрозварювання живих тканин для сучасної хірургії.
             </p>
