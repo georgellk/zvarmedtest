@@ -12,6 +12,9 @@ import {
   Play,
   ChevronRight,
   Check,
+  FileText,
+  Quote,
+  Award,
 } from "lucide-react";
 
 import heroImg from "@/assets/hero.jpg";
