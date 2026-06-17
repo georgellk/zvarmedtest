@@ -891,22 +891,199 @@ function Footer() {
   );
 }
 
+function VideoGallery() {
+  const cats = [
+    "Абдомінальна хірургія",
+    "Гінекологія",
+    "ЛОР",
+    "Торакальна хірургія",
+    "Флебологія",
+    "Проктологія",
+    "Ветеринарія",
+  ];
+  return (
+    <section className="bg-bone px-6 py-32 md:px-10 md:py-40">
+      <div className="mx-auto max-w-[1440px]">
+        <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
+          <Reveal>
+            <Eyebrow>відео операцій</Eyebrow>
+            <h2 className="display mt-4 text-[clamp(2.25rem,6vw,5.5rem)] text-ink">
+              Реальні <span className="text-rose-deep">операції</span>
+            </h2>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <p className="max-w-md text-base text-ink-soft md:text-lg">
+              Записи клінічних втручань із застосуванням біозварювання — за напрямками хірургії.
+            </p>
+          </Reveal>
+        </div>
+
+        <Reveal delay={0.15}>
+          <div className="mt-12 flex flex-wrap gap-2">
+            {cats.map((c) => (
+              <span key={c} className="pill pill-light text-sm" style={{ height: 44, padding: "0 1.125rem" }}>
+                {c}
+              </span>
+            ))}
+          </div>
+        </Reveal>
+
+        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
+          {[0, 1, 2].map((i) => (
+            <Reveal key={i} delay={i * 0.08}>
+              <button className="group relative block aspect-video w-full overflow-hidden rounded-3xl bg-ink">
+                <img
+                  src={heroImg}
+                  alt="Відео операції"
+                  loading="lazy"
+                  className="h-full w-full object-cover opacity-70 transition-opacity group-hover:opacity-100"
+                />
+                <span className="absolute inset-0 grid place-items-center">
+                  <span className="grid h-16 w-16 place-items-center rounded-full bg-bone/95 text-ink transition-transform group-hover:scale-110">
+                    <Play className="h-5 w-5 fill-ink" />
+                  </span>
+                </span>
+                <span className="absolute bottom-4 left-4 rounded-full bg-ink/70 px-3 py-1 text-xs text-bone backdrop-blur">
+                  {cats[i]}
+                </span>
+              </button>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Doctors() {
+  const docs = [
+    {
+      name: "Олександр Іваненко",
+      spec: "Хірург-флеболог",
+      city: "Київ",
+      quote:
+        "Технологія SVARMED змінила підхід нашої клініки до ЕВЕЗ — економічно вигідно і безпечно для пацієнта.",
+    },
+    {
+      name: "Марина Коваль",
+      spec: "Гінеколог-онколог",
+      city: "Львів",
+      quote:
+        "Мінімальна термічна травма і надійний гемостаз. Працюю на Dr.Nic щодня — обладнання стабільне.",
+    },
+    {
+      name: "Андрій Петренко",
+      spec: "Абдомінальний хірург",
+      city: "Дніпро",
+      quote:
+        "MARK AI скоротив час складних резекцій. Бригада менше втомлюється — більше операцій на день.",
+    },
+  ];
+  return (
+    <section className="bg-ink px-6 py-32 text-bone md:px-10 md:py-40">
+      <div className="mx-auto max-w-[1440px]">
+        <Reveal>
+          <Eyebrow>лікарі</Eyebrow>
+          <h2 className="display mt-4 text-[clamp(2.25rem,6vw,5.5rem)]">
+            З нами <span className="text-rose">працюють</span>
+          </h2>
+        </Reveal>
+
+        <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3">
+          {docs.map((d, i) => (
+            <Reveal key={d.name} delay={i * 0.1}>
+              <article className="flex h-full flex-col rounded-3xl border border-white/10 bg-white/[0.03] p-8 transition-colors hover:border-rose/40">
+                <Quote className="h-6 w-6 text-rose" />
+                <p className="mt-6 text-lg text-bone/85">"{d.quote}"</p>
+                <div className="mt-8 border-t border-white/10 pt-6">
+                  <div className="font-display text-lg">{d.name}</div>
+                  <div className="mt-1 text-sm text-bone/60">
+                    {d.spec} · {d.city}
+                  </div>
+                </div>
+              </article>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Certificates() {
+  const cats = [
+    "Сертифікати відповідності",
+    "Декларації",
+    "Реєстраційні документи",
+    "Патенти",
+  ];
+  return (
+    <section className="bg-bone px-6 py-32 md:px-10 md:py-40">
+      <div className="mx-auto max-w-[1440px]">
+        <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
+          <Reveal>
+            <Eyebrow>документи</Eyebrow>
+            <h2 className="display mt-4 text-[clamp(2.25rem,6vw,5.5rem)] text-ink">
+              Сертифікати
+              <br />
+              <span className="text-rose-deep">та патенти</span>
+            </h2>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <p className="max-w-md text-base text-ink-soft md:text-lg">
+              Повний пакет реєстраційних документів та підтверджень відповідності — для тендерів,
+              закупівель і клінічних випробувань.
+            </p>
+          </Reveal>
+        </div>
+
+        <div className="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {cats.map((c, i) => (
+            <Reveal key={c} delay={i * 0.08}>
+              <a
+                href="#"
+                className="group flex h-full flex-col justify-between rounded-3xl border border-ink/10 bg-white p-7 transition-all hover:-translate-y-1 hover:border-rose hover:shadow-[0_20px_60px_-30px_rgba(52,22,59,0.35)]"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-rose/30 text-ink">
+                    <Award className="h-5 w-5" />
+                  </span>
+                  <FileText className="h-4 w-4 text-ink/30" />
+                </div>
+                <div className="mt-10">
+                  <div className="font-display text-xs text-rose-deep">PDF · 0{i + 1}</div>
+                  <div className="mt-3 text-lg text-ink md:text-xl">{c}</div>
+                </div>
+                <ArrowUpRight className="mt-6 h-4 w-4 text-ink/40 transition-transform group-hover:rotate-45 group-hover:text-ink" />
+              </a>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Index() {
   return (
     <main className="bg-bone">
       <Hero />
+      <About />
       <Essence />
       <WhatIsBioWelding />
       <Advantages />
+      <TrustedBy />
       <Equipment />
       <InstrumentsCatalog />
+      <VideoGallery />
+      <VideoBlock />
       <EVEZ />
       <Directions />
-      <VideoBlock />
-      <TrustedBy />
-      <About />
+      <Doctors />
+      <Certificates />
       <FinalCTA />
       <Footer />
     </main>
   );
 }
+
