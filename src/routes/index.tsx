@@ -78,17 +78,29 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
   );
 }
 
+/* ---------- brand mark ---------- */
+
+function LogoMark({ className = "", color = "currentColor" }: { className?: string; color?: string }) {
+  // Diamond cluster: top, left, right, bottom — matches brand identity
+  return (
+    <svg viewBox="0 0 64 64" className={className} fill={color} aria-hidden="true">
+      <rect x="26" y="2" width="12" height="12" transform="rotate(45 32 8)" />
+      <rect x="10" y="22" width="10" height="10" transform="rotate(45 15 27)" />
+      <rect x="44" y="22" width="10" height="10" transform="rotate(45 49 27)" />
+      <rect x="27" y="38" width="10" height="10" transform="rotate(45 32 43)" />
+    </svg>
+  );
+}
+
 /* ---------- sections ---------- */
 
 function Nav() {
   return (
     <header className="fixed inset-x-0 top-0 z-50">
       <div className="mx-auto flex max-w-[1440px] items-center justify-between px-6 py-5 md:px-10">
-        <a href="#top" className="flex items-center gap-2 text-bone">
-          <span className="grid h-8 w-8 place-items-center rounded-sm bg-bone text-ink">
-            <span className="block h-2 w-2 rotate-45 bg-ink" />
-          </span>
-          <span className="font-display text-base tracking-tight">SVARMED</span>
+        <a href="#top" className="flex items-center gap-3 text-bone">
+          <LogoMark className="h-7 w-7" color="currentColor" />
+          <span className="font-display text-base font-extrabold tracking-[0.18em]">SVARMED</span>
         </a>
         <div className="flex items-center gap-3">
           <a
