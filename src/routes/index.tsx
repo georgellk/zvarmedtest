@@ -3,26 +3,24 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef, useState, type FormEvent } from "react";
 import {
   ArrowUpRight,
-  Phone,
   Mail,
   MapPin,
-  MessageCircle,
-  Instagram,
-  Send,
+  Facebook,
   Play,
   ChevronRight,
   Check,
   FileText,
   Quote,
   Award,
+  X,
 } from "lucide-react";
 
-import heroImg from "@/assets/hero.jpg";
-import markAi from "@/assets/mark-ai.jpg";
-import drNic from "@/assets/dr-nic.jpg";
+import heroImgFallback from "@/assets/hero.jpg";
+import drNicFallback from "@/assets/dr-nic.jpg";
+import markAiFallback from "@/assets/mark-ai.jpg";
 import dnaOrb from "@/assets/dna-orb.jpg";
 import instrumentsImg from "@/assets/instruments.jpg";
-import probeImg from "@/assets/probe.jpg";
+import probeFallback from "@/assets/probe.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -42,6 +40,22 @@ export const Route = createFileRoute("/")({
   }),
   component: Index,
 });
+
+/* ---------- constants: external hosted assets ---------- */
+
+const LOGO_URL = "https://svarmed.lkdm.uk/assets/catalog/logos/logo-svarmed.png";
+const FACEBOOK_URL = "https://www.facebook.com/svarmed.ua";
+const HERO_IMAGE =
+  "https://drive.google.com/thumbnail?id=1rQc5AkNLWiy5bFbnJ4KjXiXHOOKgsiKW&sz=w2400";
+const PROBE_IMAGE =
+  "https://drive.google.com/thumbnail?id=1FcD8m2DyL1Wb99v7-uhcrKB9UJ10cxDx&sz=w1600";
+const MARK_AI_PHOTO = "https://svarmed.lkdm.uk/assets/product-mark.jpg";
+const DR_NIC_PHOTO = "https://svarmed.lkdm.uk/assets/product-nic.jpg";
+const SURGEONS_GRID = "https://svarmed.lkdm.uk/assets/catalog/svarmed-grid-surgeons.png";
+
+const PARTNER_LOGOS = Array.from({ length: 17 }, (_, i) =>
+  `https://svarmed.lkdm.uk/assets/catalog/logos/partner_${String(i + 1).padStart(2, "0")}.png`,
+);
 
 /* ---------- atoms ---------- */
 
@@ -81,17 +95,22 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
   );
 }
 
-/* ---------- brand mark ---------- */
-
-function LogoMark({ className = "", color = "currentColor" }: { className?: string; color?: string }) {
-  // Diamond cluster: top, left, right, bottom — matches brand identity
+function ImageWithFallback({
+  src,
+  fallback,
+  alt,
+  className,
+  ...rest
+}: { src: string; fallback: string; alt: string; className?: string } & React.ImgHTMLAttributes<HTMLImageElement>) {
+  const [current, setCurrent] = useState(src);
   return (
-    <svg viewBox="0 0 64 64" className={className} fill={color} aria-hidden="true">
-      <rect x="26" y="2" width="12" height="12" transform="rotate(45 32 8)" />
-      <rect x="10" y="22" width="10" height="10" transform="rotate(45 15 27)" />
-      <rect x="44" y="22" width="10" height="10" transform="rotate(45 49 27)" />
-      <rect x="27" y="38" width="10" height="10" transform="rotate(45 32 43)" />
-    </svg>
+    <img
+      src={current}
+      alt={alt}
+      className={className}
+      onError={() => current !== fallback && setCurrent(fallback)}
+      {...rest}
+    />
   );
 }
 
@@ -102,35 +121,31 @@ function Nav() {
     <header className="fixed inset-x-0 top-0 z-50">
       <div className="mx-auto flex max-w-[1440px] items-center justify-between px-6 py-5 md:px-10">
         <a href="#top" className="flex items-center gap-3 text-bone">
-          <LogoMark className="h-7 w-7" color="currentColor" />
+          <img
+            src={LOGO_URL}
+            alt="SVARMED"
+            className="h-8 w-auto"
+            onError={(e) => (e.currentTarget.style.display = "none")}
+          />
           <span className="font-display text-base font-extrabold tracking-[0.18em]">SVARMED</span>
         </a>
         <div className="flex items-center gap-3">
           <a
-            href="#"
-            aria-label="WhatsApp"
+            href={FACEBOOK_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Facebook"
             className="grid h-12 w-12 place-items-center rounded-full border border-white/30 text-bone backdrop-blur-md hover:bg-white/10"
           >
-            <MessageCircle className="h-4 w-4" />
+            <Facebook className="h-4 w-4" />
           </a>
           <a
-            href="#"
-            aria-label="Instagram"
-            className="grid h-12 w-12 place-items-center rounded-full border border-white/30 text-bone backdrop-blur-md hover:bg-white/10"
+            href="#contact"
+            className="hidden md:inline-flex pill pill-light hover-lift text-sm"
+            style={{ height: 48 }}
           >
-            <Instagram className="h-4 w-4" />
+            Замовити апробацію
           </a>
-          <button className="ml-2 hidden items-center gap-3 text-bone md:flex">
-            <span className="text-sm">menu</span>
-            <span className="grid h-12 w-12 place-items-center rounded-full bg-bone text-ink">
-              <span className="grid grid-cols-2 gap-[3px]">
-                <span className="h-1 w-1 rounded-full bg-ink" />
-                <span className="h-1 w-1 rounded-full bg-ink" />
-                <span className="h-1 w-1 rounded-full bg-ink" />
-                <span className="h-1 w-1 rounded-full bg-ink" />
-              </span>
-            </span>
-          </button>
         </div>
       </div>
     </header>
@@ -143,14 +158,20 @@ function Hero() {
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
   const opacity = useTransform(scrollYProgress, [0, 1], [1, 0.4]);
 
+  const stats: Array<[string, string]> = [
+    ["11", "років існування компанії на медичному ринку"],
+    ["570+", "генераторів вже працюють в медичних закладах"],
+    ["150+", "державних лікарень мають генератор"],
+    ["20+", "років практичного застосування «Біозварювання»"],
+  ];
+
   return (
     <section id="top" ref={ref} className="relative min-h-screen overflow-hidden bg-ink text-bone">
       <motion.div style={{ y, opacity }} className="absolute inset-0">
-        <img
-          src={heroImg}
-          alt="Хірургічна операція з біозварювання тканин"
-          width={1920}
-          height={1080}
+        <ImageWithFallback
+          src={HERO_IMAGE}
+          fallback={heroImgFallback}
+          alt="Біозварювання живих тканин — SVARMED"
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/40 to-ink" />
@@ -173,13 +194,11 @@ function Hero() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-          className="display text-[clamp(2.75rem,9vw,10rem)]"
+          className="display text-[clamp(2.5rem,8vw,9rem)]"
         >
           Біозварювання
           <br />
-          <span className="text-rose">тканин</span> — нова
-          <br />
-          ера хірургії
+          <span className="text-rose">живих тканин</span>
         </motion.h1>
 
         <motion.p
@@ -188,8 +207,8 @@ function Hero() {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="mt-10 max-w-2xl text-lg text-bone/75 md:text-xl"
         >
-          Сучасна українська технологія зварювання живих тканин для хірургії, флебології, гінекології,
-          ЛОР, онкохірургії та ветеринарії.
+          Svarmed — українська компанія, яка з 2015 року розробляє і виробляє advance-біполярні
+          електрокоагулятори та інструменти для біозварювання живих м'яких тканин у людей та тварин.
         </motion.p>
 
         <motion.div
@@ -208,12 +227,7 @@ function Hero() {
         </motion.div>
 
         <div className="mt-16 grid grid-cols-2 gap-8 border-t border-white/15 pt-8 text-bone/80 md:grid-cols-4">
-          {[
-            ["15+", "років досвіду"],
-            ["8", "напрямків хірургії"],
-            ["20", "процедур / зонд"],
-            ["600 ₴", "собівартість операції"],
-          ].map(([n, l]) => (
+          {stats.map(([n, l]) => (
             <div key={l}>
               <div className="font-display text-3xl text-bone md:text-5xl">{n}</div>
               <div className="mt-2 text-xs uppercase tracking-wider text-bone/55">{l}</div>
@@ -226,6 +240,7 @@ function Hero() {
 }
 
 function Essence() {
+  const badges = ["Швидко", "Безпечно", "Вигідно"];
   return (
     <section className="bg-bone px-6 py-32 md:px-10 md:py-48">
       <div className="mx-auto max-w-[1240px] text-center">
@@ -233,25 +248,26 @@ function Essence() {
           <Eyebrow>суть технології</Eyebrow>
         </Reveal>
         <Reveal delay={0.1}>
-          <h2 className="display mt-8 text-[clamp(2rem,6vw,5.5rem)] text-ink">
-            Зварювання живих тканин <br />
-            <span className="text-rose-deep">без шовного матеріалу</span>
-            <br /> та з мінімальною термічною травмою
+          <h2 className="display mt-8 text-[clamp(1.85rem,4.6vw,4rem)] text-ink">
+            Точне розділення та заварювання судин <br />
+            <span className="text-rose-deep">діаметром до 7 мм</span>
           </h2>
         </Reveal>
+        <Reveal delay={0.15}>
+          <p className="mx-auto mt-8 max-w-2xl text-lg text-ink-soft md:text-xl">
+            Технологія біозварювання дозволяє виконувати точні розділення та заварювання судин
+            діаметром до 7 мм — швидко, з мінімальним тепловим ураженням та зменшенням крововтрати.
+          </p>
+        </Reveal>
 
-        <div className="mt-20 grid grid-cols-1 gap-4 md:grid-cols-3">
-          {[
-            { label: "Ефективно", icon: <Check className="h-4 w-4" /> },
-            { label: "Безпечно", icon: <Check className="h-4 w-4" /> },
-            { label: "Економічно", icon: <Check className="h-4 w-4" /> },
-          ].map((item, i) => (
-            <Reveal delay={i * 0.1} key={item.label} className="flex justify-center">
+        <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-3">
+          {badges.map((label, i) => (
+            <Reveal delay={i * 0.1} key={label} className="flex justify-center">
               <div className="pill pill-rose hover-lift">
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-ink text-bone">
-                  {item.icon}
+                  <Check className="h-4 w-4" />
                 </span>
-                {item.label}
+                {label}
               </div>
             </Reveal>
           ))}
@@ -263,7 +279,7 @@ function Essence() {
 
 function WhatIsBioWelding() {
   const points = [
-    "Коагуляція тканин",
+    "Надійний гемостаз без шовного матеріалу",
     "Герметизація судин",
     "Мінімальна термічна травма",
     "Збереження життєздатності тканин",
@@ -284,8 +300,9 @@ function WhatIsBioWelding() {
         <div className="md:col-span-7">
           <Reveal>
             <p className="max-w-xl text-lg text-bone/75 md:text-xl">
-              Біозварювання — це технологія електрозварювання живих тканин, яка дозволяє виконувати
-              коагуляцію, герметизацію судин і з'єднання тканин без традиційного шовного матеріалу.
+              Технологія, яка за допомогою контрольованої біполярної електроенергії надійно
+              з'єднує (зварює), розділяє живі тканини та герметично закриває судини без шовного
+              матеріалу, забезпечуючи надійний гемостаз і мінімальну травматизацію тканин.
             </p>
           </Reveal>
 
@@ -307,14 +324,14 @@ function WhatIsBioWelding() {
 
 function Advantages() {
   const cards = [
-    "Безшовний гемостаз",
+    "Надійний гемостаз",
     "Мінімальна крововтрата",
-    "Скорочення часу операції",
+    "Скорочення часу операції до 50%",
     "Зниження післяопераційного болю",
     "Менше витратних матеріалів",
-    "Менше навантаження на бригаду",
-    "Більше операцій без розширення",
-    "Універсальність застосування",
+    "Офіційний багаторазовий інструмент",
+    "Застосування в 10+ напрямках хірургії",
+    "Унікальний ручний режим зварювання",
   ];
   return (
     <section className="bg-bone px-6 py-32 md:px-10 md:py-40">
@@ -323,8 +340,8 @@ function Advantages() {
           <Reveal>
             <Eyebrow>переваги</Eyebrow>
             <h2 className="display mt-4 text-[clamp(2.25rem,6vw,5.5rem)] text-ink">
-              Клінічні
-              <br /> переваги
+              Переваги
+              <br /> технології
             </h2>
           </Reveal>
           <Reveal delay={0.1}>
@@ -351,75 +368,214 @@ function Advantages() {
   );
 }
 
+/* ---------- Equipment with modals ---------- */
+
+type ProductCard = {
+  name: string;
+  tier: string;
+  photo: string;
+  fallback: string;
+  highlight: string;
+  short: string;
+  modal: {
+    title: string;
+    body: string;
+    advantages: string[];
+    spec_table: Record<string, string>;
+    cert: string;
+  };
+};
+
+const PRODUCTS: ProductCard[] = [
+  {
+    name: "MARK AI",
+    tier: "Base",
+    photo: MARK_AI_PHOTO,
+    fallback: markAiFallback,
+    highlight: "MARK AI — універсальне рішення для більшості операційних.",
+    short:
+      "Універсальна система біозварювання для відкритої та лапароскопічної хірургії з автоматичним дозуванням енергії.",
+    modal: {
+      title: "Універсальна система біозварювання для щоденної хірургічної практики",
+      body:
+        "Сучасний електрокоагулятор з технологією Біозварювання. Автоматично адаптує енергію до тканини: надійний гемостаз, мінімальна термічна травма. Компактний (300×135×230 мм, 3,5 кг). Потужність до 300 Вт (зварювання) / 350 Вт (коагуляція й різання).",
+      advantages: [
+        "Компактний та мобільний дизайн",
+        "Потужність до 350 Вт",
+        "Інтуїтивне керування",
+        "Автоматичне керування Біозварюванням",
+        "Мінімальні витратні матеріали",
+        "Висока економічна ефективність",
+      ],
+      spec_table: {
+        "Електроживлення": "230 В (±10%), 50 Гц",
+        "Номінальна потужність": "700 ВА",
+        "Розміри (Ш×В×Г)": "300×135×230 мм",
+        "Маса": "3,5 кг",
+        "Клас захисту": "II",
+        "Тип": "BF",
+        "Потужність зварювання": "300 Вт",
+        "Потужність коагуляції": "350 Вт",
+        "Потужність різання": "350 Вт",
+        "Частота на виході": "440 кГц",
+      },
+      cert: "З 2017 р. сертифікат відповідності №UA.TR.039.129 + система якості №066 ДСТУ EN ISO 13485:2015.",
+    },
+  },
+  {
+    name: "dr.Nic",
+    tier: "Premium",
+    photo: DR_NIC_PHOTO,
+    fallback: drNicFallback,
+    highlight:
+      "Dr.Nic — флагманська система для клінік, які прагнуть найвищого рівня комфорту, автоматизації та продуктивності.",
+    short:
+      "Флагманська система: одночасне підключення кількох інструментів без перепідключення + профілі до 5 хірургів.",
+    modal: {
+      title: "Флагманська платформа Біозварювання для сучасних операційних",
+      body:
+        "Преміальна система для багатопрофільних лікарень. Одночасне підключення кількох інструментів без перепідключення; профілі до 5 хірургів. Сенсорний дисплей, потужність Біозварювання до 360 Вт.",
+      advantages: [
+        "Одночасне підключення кількох інструментів",
+        "Персональні профілі для 5 хірургів",
+        "Сенсорний інтерфейс",
+        "Потужність Біозварювання до 360 Вт",
+        "Максимальна автоматизація",
+        "Для великих багатопрофільних закладів",
+      ],
+      spec_table: {
+        "Електроживлення": "230 В (±10%), 50 Гц",
+        "Номінальна потужність": "700 ВА",
+        "Розміри (Ш×В×Г)": "350×200×320 мм",
+        "Маса": "5 кг",
+        "Клас захисту": "I",
+        "Тип": "BF",
+        "Потужність зварювання": "320 Вт",
+        "Потужність коагуляції": "300 Вт",
+        "Потужність різання": "300 Вт",
+        "Частота на виході": "450 кГц",
+      },
+      cert: "З 2017 р. сертифікат відповідності №UA.TR.039.129 + система якості №066 ДСТУ EN ISO 13485:2015.",
+    },
+  },
+];
+
+function ProductModal({ product, onClose }: { product: ProductCard; onClose: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-end justify-center bg-ink/80 p-0 backdrop-blur-sm md:items-center md:p-6"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: 40, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        onClick={(e) => e.stopPropagation()}
+        className="relative max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-t-3xl bg-bone p-6 text-ink md:rounded-3xl md:p-12"
+      >
+        <button
+          onClick={onClose}
+          aria-label="Закрити"
+          className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-ink text-bone hover:bg-ink-soft"
+        >
+          <X className="h-4 w-4" />
+        </button>
+        <div className="flex items-center justify-between gap-4">
+          <span className="eyebrow">{product.tier}</span>
+          <span className="font-display text-xl">{product.name}</span>
+        </div>
+        <h3 className="display mt-4 text-[clamp(1.5rem,3vw,2.5rem)]">{product.modal.title}</h3>
+        <p className="mt-6 max-w-2xl text-base text-ink-soft md:text-lg">{product.modal.body}</p>
+
+        <div className="mt-10 grid gap-8 md:grid-cols-2">
+          <div>
+            <h4 className="eyebrow mb-4">Переваги</h4>
+            <ul className="space-y-2">
+              {product.modal.advantages.map((a) => (
+                <li key={a} className="flex items-start gap-3 text-sm md:text-base">
+                  <Check className="mt-1 h-4 w-4 shrink-0 text-rose-deep" /> {a}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 className="eyebrow mb-4">Технічні характеристики</h4>
+            <dl className="divide-y divide-ink/10 rounded-2xl border border-ink/10 bg-white">
+              {Object.entries(product.modal.spec_table).map(([k, v]) => (
+                <div key={k} className="flex items-center justify-between px-4 py-3 text-sm">
+                  <dt className="text-ink-soft">{k}</dt>
+                  <dd className="font-medium text-ink">{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
+
+        <div className="mt-8 rounded-2xl bg-rose/30 p-5 text-sm text-ink md:text-base">
+          <div className="flex items-start gap-3">
+            <Award className="mt-1 h-4 w-4 shrink-0" />
+            <span>{product.modal.cert}</span>
+          </div>
+        </div>
+
+        <div className="mt-8 flex flex-wrap gap-3">
+          <a href="#contact" onClick={onClose} className="pill pill-dark hover-lift">
+            Замовити апробацію <ArrowUpRight className="h-4 w-4" />
+          </a>
+          <button onClick={onClose} className="pill pill-light hover-lift">
+            Закрити
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 function Equipment() {
-  const products = [
-    {
-      name: "MARK AI",
-      tag: "Флагман",
-      desc:
-        "Електрохірургічний апарат нового покоління для біозварювання тканин у сучасній операційній практиці.",
-      img: markAi,
-      specs: ["Потужність до 300 Вт", "Сенсорний дисплей", "AI-контроль зварювання"],
-    },
-    {
-      name: "Dr.Nic",
-      tag: "Компактний",
-      desc:
-        "Компактне рішення для електрозварювання тканин, швидкої герметизації судин та стабільної роботи в операційній.",
-      img: drNic,
-      specs: ["Портативний форм-фактор", "Швидкий запуск", "Подвійний канал"],
-    },
-  ];
+  const [open, setOpen] = useState<ProductCard | null>(null);
   return (
     <section id="equipment" className="bg-ink px-6 py-32 text-bone md:px-10 md:py-40">
       <div className="mx-auto max-w-[1440px]">
         <Reveal>
           <Eyebrow>обладнання</Eyebrow>
           <h2 className="display mt-4 text-[clamp(2.5rem,7vw,7rem)]">
-            Лінійка <span className="text-rose">обладнання</span>
+            Лінійка <span className="text-rose">електрокоагуляторів</span>
           </h2>
         </Reveal>
 
         <div className="mt-20 grid grid-cols-1 gap-8 lg:grid-cols-2">
-          {products.map((p, i) => (
+          {PRODUCTS.map((p, i) => (
             <Reveal key={p.name} delay={i * 0.1}>
               <article className="group relative flex h-full flex-col overflow-hidden rounded-[2rem] bg-gradient-to-b from-white/[0.06] to-white/[0.02] p-8 ring-1 ring-white/10 transition-all hover:ring-rose/50">
                 <div className="flex items-center justify-between">
                   <span className="pill pill-light text-sm" style={{ height: 40, padding: "0 1rem" }}>
                     {p.name}
                   </span>
-                  <span className="text-xs uppercase tracking-widest text-rose">{p.tag}</span>
+                  <span className="text-xs uppercase tracking-widest text-rose">{p.tier}</span>
                 </div>
 
                 <div className="relative my-8 aspect-[4/3] overflow-hidden rounded-2xl bg-white/5">
-                  <motion.img
-                    src={p.img}
+                  <ImageWithFallback
+                    src={p.photo}
+                    fallback={p.fallback}
                     alt={p.name}
                     loading="lazy"
-                    width={1200}
-                    height={900}
-                    className="h-full w-full object-cover"
-                    whileHover={{ scale: 1.04 }}
-                    transition={{ duration: 0.8 }}
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 </div>
 
-                <p className="text-bone/70 md:text-lg">{p.desc}</p>
-
-                <ul className="mt-6 space-y-2 text-sm text-bone/60">
-                  {p.specs.map((s) => (
-                    <li key={s} className="flex items-center gap-3 border-t border-white/10 py-3">
-                      <span className="h-1 w-1 rounded-full bg-rose" />
-                      {s}
-                    </li>
-                  ))}
-                </ul>
+                <p className="text-lg text-bone/85 md:text-xl">{p.highlight}</p>
+                <p className="mt-3 text-sm text-bone/60">{p.short}</p>
 
                 <div className="mt-8 flex flex-wrap gap-3">
                   <a href="#contact" className="pill pill-rose hover-lift text-sm" style={{ height: 52 }}>
                     Замовити апробацію
                   </a>
-                  <button className="pill border border-white/20 text-bone hover-lift text-sm" style={{ height: 52 }}>
+                  <button
+                    onClick={() => setOpen(p)}
+                    className="pill border border-white/20 text-bone hover-lift text-sm"
+                    style={{ height: 52 }}
+                  >
                     Детальніше <ChevronRight className="h-4 w-4" />
                   </button>
                 </div>
@@ -428,18 +584,22 @@ function Equipment() {
           ))}
         </div>
       </div>
+
+      {open && <ProductModal product={open} onClose={() => setOpen(null)} />}
     </section>
   );
 }
 
 function InstrumentsCatalog() {
   const cats = [
-    "Затискачі",
-    "Затискачі-ножиці",
-    "Біполярні пінцети",
-    "Лапароскопічні інструменти",
+    "ЛОР-інструменти",
     "Ендовенозні зонди",
-    "Ветеринарні інструменти",
+    "Лапароскопічні інструменти",
+    "Затискачі",
+    "Ножиці",
+    "Пінцети",
+    "Біполярні кабелі",
+    "Інший інструмент",
   ];
   return (
     <section className="bg-bone px-6 py-32 md:px-10 md:py-40">
@@ -488,11 +648,20 @@ function InstrumentsCatalog() {
 
 function EVEZ() {
   const advs = [
-    ["600₴", "собівартість операції"],
-    ["20×", "процедур одним зондом"],
-    ["AUTO", "автоматичне зварювання"],
-    ["UA", "українська технологія"],
+    "Безпечна альтернатива лазеру та РЧА",
+    "Багаторазовий зонд — до 20 процедур",
+    "Низька собівартість процедури",
+    "Контрольоване автоматичне зварювання",
+    "Стабільний результат на венах різного діаметра",
+    "Мінімальний реабілітаційний період",
   ];
+  const clinical = [
+    ["95%+", "клінічна ефективність закриття вени"],
+    ["≈30 хв", "тривалість процедури під місцевою анестезією"],
+    ["0", "розрізів — пункційний доступ"],
+    ["1–2 дні", "повернення до активного життя"],
+  ];
+
   return (
     <section className="relative overflow-hidden bg-ink px-6 py-32 text-bone md:px-10 md:py-40">
       <div className="pointer-events-none absolute -right-32 top-1/4 h-[500px] w-[500px] rounded-full bg-glow/20 blur-[120px]" />
@@ -514,20 +683,37 @@ function EVEZ() {
           <div className="md:col-span-7">
             <Reveal>
               <p className="text-xl text-bone/80 md:text-2xl">
-                ЕВЕЗ — сучасна українська альтернатива лазеру та RFA. Автоматичне зварювання вен з низькою
-                собівартістю процедури та багаторазовим зондом.
+                ЕВЕЗ — українська технологія контрольованого закриття вен з низькою собівартістю
+                процедури та багаторазовим зондом.
               </p>
             </Reveal>
+
             <Reveal delay={0.15}>
-              <div className="mt-10 grid grid-cols-2 gap-4">
-                {advs.map(([n, l]) => (
+              <h3 className="eyebrow mt-12">Переваги ЕВЕЗ</h3>
+              <ul className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {advs.map((a) => (
+                  <li
+                    key={a}
+                    className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-sm md:text-base"
+                  >
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-rose" /> {a}
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+
+            <Reveal delay={0.2}>
+              <h3 className="eyebrow mt-12">Клінічна ефективність</h3>
+              <div className="mt-6 grid grid-cols-2 gap-4">
+                {clinical.map(([n, l]) => (
                   <div key={l} className="rounded-2xl border border-white/10 p-6">
-                    <div className="font-display text-3xl text-rose md:text-4xl">{n}</div>
-                    <div className="mt-2 text-sm text-bone/60">{l}</div>
+                    <div className="font-display text-2xl text-rose md:text-4xl">{n}</div>
+                    <div className="mt-2 text-sm text-bone/65">{l}</div>
                   </div>
                 ))}
               </div>
             </Reveal>
+
             <Reveal delay={0.25}>
               <a href="#contact" className="pill pill-rose hover-lift mt-10 inline-flex">
                 Замовити апробацію ЕВЕЗ <ArrowUpRight className="h-4 w-4" />
@@ -543,31 +729,14 @@ function EVEZ() {
               transition={{ duration: 1 }}
               className="overflow-hidden rounded-3xl"
             >
-              <img
-                src={probeImg}
-                alt="Ендовенозний зонд SVARMED"
-                width={1200}
-                height={900}
+              <ImageWithFallback
+                src={PROBE_IMAGE}
+                fallback={probeFallback}
+                alt="Ендовенозні зонди SVARMED"
                 loading="lazy"
                 className="aspect-square w-full object-cover"
               />
             </motion.div>
-
-            <div className="mt-6 grid grid-cols-3 gap-2 text-xs">
-              {["Laser", "RFA", "EVEZ"].map((t, i) => (
-                <div
-                  key={t}
-                  className={`rounded-xl p-4 ring-1 ${
-                    i === 2 ? "bg-rose text-ink ring-rose" : "text-bone/60 ring-white/15"
-                  }`}
-                >
-                  <div className="font-display text-sm">{t}</div>
-                  <div className="mt-2 text-[10px] opacity-70">
-                    {i === 0 ? "висока ціна" : i === 1 ? "одноразовий" : "до 20 процедур"}
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>
@@ -585,6 +754,9 @@ function Directions() {
     "Проктологія",
     "Онкохірургія",
     "Ветеринарія",
+    "Ендокринна хірургія",
+    "Пластична хірургія",
+    "Урологія",
   ];
   return (
     <section className="bg-bone px-6 py-32 md:px-10 md:py-40">
@@ -616,71 +788,26 @@ function Directions() {
   );
 }
 
-function VideoBlock() {
-  return (
-    <section className="bg-bone px-6 pb-32 md:px-10">
-      <div className="mx-auto grid max-w-[1440px] items-center gap-12 md:grid-cols-12">
-        <div className="md:col-span-5">
-          <Reveal>
-            <h2 className="display text-[clamp(2rem,5vw,4.5rem)] text-ink">
-              Відео <br />
-              з <span className="text-rose-deep">відгуками</span> <br />
-              хірургів
-            </h2>
-            <p className="mt-6 max-w-md text-base text-ink-soft md:text-lg">
-              Клінічні відеоматеріали реальних операцій у різних напрямках хірургії.
-            </p>
-          </Reveal>
-        </div>
-        <div className="md:col-span-7">
-          <Reveal delay={0.1}>
-            <div className="group relative aspect-video overflow-hidden rounded-3xl bg-ink">
-              <img
-                src={heroImg}
-                alt="Відео операції SVARMED"
-                loading="lazy"
-                width={1920}
-                height={1080}
-                className="h-full w-full object-cover opacity-70 transition-opacity group-hover:opacity-100"
-              />
-              <button className="absolute inset-0 grid place-items-center">
-                <span className="grid h-20 w-20 place-items-center rounded-full bg-bone/90 text-ink backdrop-blur transition-transform group-hover:scale-110">
-                  <Play className="h-6 w-6 fill-ink" />
-                </span>
-              </button>
-            </div>
-          </Reveal>
-        </div>
-      </div>
-
-      <Reveal>
-        <h3 className="display mx-auto mt-24 max-w-[1440px] text-[clamp(3rem,12vw,14rem)] leading-[0.85] text-ink">
-          Відео
-          <br />
-          реальних
-          <br />
-          <span className="text-rose-deep">операцій</span>
-        </h3>
-      </Reveal>
-    </section>
-  );
-}
-
 function TrustedBy() {
-  const logos = ["Охматдит", "Феофанія", "Добробут", "Медіком", "Інто-Сана", "VetCity", "Інститут серця", "Боріс"];
   return (
-    <section className="border-y border-ink/10 bg-bone py-16">
-      <Reveal>
-        <p className="mb-10 text-center text-xs uppercase tracking-[0.3em] text-ink-soft">
-          Нам довіряють — клініки України
-        </p>
-      </Reveal>
-      <div className="overflow-hidden">
-        <div className="marquee-track flex w-max gap-16 px-8">
-          {[...logos, ...logos].map((l, i) => (
-            <span key={i} className="font-display text-2xl text-ink/40 md:text-3xl">
-              {l}
-            </span>
+    <section className="border-y border-ink/10 bg-bone py-20">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-10">
+        <Reveal>
+          <p className="mb-12 text-center text-xs uppercase tracking-[0.3em] text-ink-soft">
+            Нам довіряють — клініки України
+          </p>
+        </Reveal>
+        <div className="grid grid-cols-3 items-center gap-x-8 gap-y-10 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
+          {PARTNER_LOGOS.map((src, i) => (
+            <Reveal key={src} delay={(i % 8) * 0.04} className="flex justify-center">
+              <img
+                src={src}
+                alt={`Партнер ${i + 1}`}
+                loading="lazy"
+                className="h-14 w-auto max-w-[140px] object-contain opacity-70 grayscale transition hover:opacity-100 hover:grayscale-0"
+                onError={(e) => (e.currentTarget.style.visibility = "hidden")}
+              />
+            </Reveal>
           ))}
         </div>
       </div>
@@ -690,11 +817,10 @@ function TrustedBy() {
 
 function About() {
   const points = [
-    "Український виробник",
+    "Сертифікований виробник",
     "Власна технологія",
-    "Сервісна підтримка 24/7",
+    "Сервісна підтримка в Україні",
     "Навчання лікарів",
-    "15+ років на ринку",
   ];
   return (
     <section className="bg-ink px-6 py-32 text-bone md:px-10 md:py-40">
@@ -745,162 +871,28 @@ function About() {
   );
 }
 
-function FinalCTA() {
-  const [submitted, setSubmitted] = useState(false);
-  const onSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-  };
-  return (
-    <section id="contact" className="bg-bone px-6 py-32 md:px-10 md:py-40">
-      <div className="mx-auto grid max-w-[1440px] gap-16 md:grid-cols-12">
-        <div className="md:col-span-6">
-          <Reveal>
-            <Eyebrow>контакти</Eyebrow>
-            <h2 className="display mt-6 text-[clamp(2.5rem,7vw,7rem)] text-ink">
-              Замовте
-              <br />
-              <span className="text-rose-deep">апробацію</span>
-              <br /> обладнання
-            </h2>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <p className="mt-8 max-w-md text-lg text-ink-soft">
-              Отримайте консультацію, демонстрацію технології та можливість апробації у вашій клініці.
-            </p>
-          </Reveal>
-          <Reveal delay={0.2}>
-            <div className="mt-10 space-y-4 text-ink-soft">
-              <a href="tel:+380966809685" className="flex items-center gap-4 hover:text-ink">
-                <Phone className="h-4 w-4" /> +38 (096) 680-96-85
-              </a>
-              <a href="mailto:svarmed@gmail.com" className="flex items-center gap-4 hover:text-ink">
-                <Mail className="h-4 w-4" /> svarmed@gmail.com
-              </a>
-              <div className="flex items-center gap-4">
-                <MapPin className="h-4 w-4" /> Київ, вул. Куренівська, 18
-              </div>
-            </div>
-          </Reveal>
-        </div>
+/* ---------- Video gallery (real YT thumbnails) ---------- */
 
-        <Reveal delay={0.15} className="md:col-span-6">
-          <form
-            onSubmit={onSubmit}
-            className="rounded-3xl border border-ink/10 bg-white p-8 md:p-10"
-          >
-            {submitted ? (
-              <div className="grid place-items-center py-20 text-center">
-                <div className="grid h-16 w-16 place-items-center rounded-full bg-rose">
-                  <Check className="h-6 w-6 text-ink" />
-                </div>
-                <p className="mt-6 font-display text-2xl text-ink">Заявку прийнято</p>
-                <p className="mt-2 text-ink-soft">Ми зв'яжемось з вами найближчим часом.</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {[
-                  { label: "Ім'я", type: "text", name: "name" },
-                  { label: "Телефон", type: "tel", name: "phone" },
-                  { label: "Лікарня / клініка", type: "text", name: "clinic" },
-                  { label: "Спеціальність", type: "text", name: "spec" },
-                ].map((f) => (
-                  <label key={f.name} className="block">
-                    <span className="text-xs uppercase tracking-wider text-ink-soft">{f.label}</span>
-                    <input
-                      required
-                      type={f.type}
-                      name={f.name}
-                      className="mt-2 block w-full border-b border-ink/20 bg-transparent pb-3 text-lg text-ink outline-none transition-colors focus:border-ink"
-                    />
-                  </label>
-                ))}
-                <label className="block">
-                  <span className="text-xs uppercase tracking-wider text-ink-soft">Повідомлення</span>
-                  <textarea
-                    name="message"
-                    rows={3}
-                    className="mt-2 block w-full border-b border-ink/20 bg-transparent pb-3 text-lg text-ink outline-none transition-colors focus:border-ink"
-                  />
-                </label>
-                <button type="submit" className="pill pill-dark hover-lift mt-6 w-full justify-center">
-                  Замовити апробацію <ArrowUpRight className="h-4 w-4" />
-                </button>
-              </div>
-            )}
-          </form>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="border-t border-ink/10 bg-bone px-6 pb-10 pt-16 md:px-10">
-      <div className="mx-auto max-w-[1440px]">
-        <div className="grid gap-10 md:grid-cols-12">
-          <div className="md:col-span-4">
-            <div className="flex items-center gap-3">
-              <LogoMark className="h-7 w-7 text-ink" />
-              <span className="font-display text-base font-extrabold tracking-[0.18em] text-ink">SVARMED</span>
-            </div>
-            <p className="mt-6 max-w-xs text-sm text-ink-soft">
-              Українська технологія електрозварювання живих тканин для сучасної хірургії.
-            </p>
-          </div>
-          <div className="md:col-span-3">
-            <h4 className="font-display text-sm text-ink">Контакти</h4>
-            <ul className="mt-4 space-y-2 text-sm text-ink-soft">
-              <li>+38 (096) 680-96-85</li>
-              <li>svarmed@gmail.com</li>
-              <li>Київ, вул. Куренівська, 18</li>
-            </ul>
-          </div>
-          <div className="md:col-span-3">
-            <h4 className="font-display text-sm text-ink">Навігація</h4>
-            <ul className="mt-4 space-y-2 text-sm text-ink-soft">
-              <li><a href="#equipment" className="hover:text-ink">Обладнання</a></li>
-              <li><a href="#contact" className="hover:text-ink">Апробація</a></li>
-              <li><a href="#" className="hover:text-ink">Гарантія</a></li>
-              <li><a href="#" className="hover:text-ink">Доставка</a></li>
-            </ul>
-          </div>
-          <div className="flex gap-3 md:col-span-2 md:justify-end">
-            {[MessageCircle, Send, Instagram].map((Icon, i) => (
-              <a
-                key={i}
-                href="#"
-                className="grid h-11 w-11 place-items-center rounded-full border border-ink/15 text-ink hover:bg-ink hover:text-bone"
-              >
-                <Icon className="h-4 w-4" />
-              </a>
-            ))}
-          </div>
-        </div>
-        <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-ink/10 pt-6 text-xs text-ink-soft md:flex-row">
-          <span>© {new Date().getFullYear()} SVARMED. Всі права захищені.</span>
-          <div className="flex gap-8">
-            <a href="#">Гарантія виробника</a>
-            <a href="#">Доставка і оплата</a>
-            <a href="#">Обмін і повернення</a>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
-}
+const VIDEOS: Array<{ id: string; cat: string }> = [
+  { id: "rmrGoao3CPY", cat: "Ендокринологія" },
+  { id: "xYIUvkpsVjs", cat: "Ветеринарія" },
+  { id: "w6vJgQ0J4JA", cat: "ЕВЕЗ" },
+  { id: "OMIUOpJjeS4", cat: "ЕВЕЗ" },
+  { id: "jcHpjSWA6lo", cat: "Урологія" },
+  { id: "RaWZepCFNFA", cat: "Урологія" },
+  { id: "uQVK_3Xfmfo", cat: "Проктологія" },
+  { id: "bjxfVDOEM3I", cat: "Пластична хірургія" },
+  { id: "DifpilhGve4", cat: "Абдомінальна хірургія" },
+  { id: "kYCAgCjq1n8", cat: "Абдомінальна хірургія" },
+  { id: "-74y5pBWtXo", cat: "Онкогінекологія" },
+];
 
 function VideoGallery() {
-  const cats = [
-    "Абдомінальна хірургія",
-    "Гінекологія",
-    "ЛОР",
-    "Торакальна хірургія",
-    "Флебологія",
-    "Проктологія",
-    "Ветеринарія",
-  ];
+  const [active, setActive] = useState<string>("Усі");
+  const cats = ["Усі", ...Array.from(new Set(VIDEOS.map((v) => v.cat)))];
+  const list = active === "Усі" ? VIDEOS : VIDEOS.filter((v) => v.cat === active);
+  const [playing, setPlaying] = useState<string | null>(null);
+
   return (
     <section className="bg-bone px-6 py-32 md:px-10 md:py-40">
       <div className="mx-auto max-w-[1440px]">
@@ -921,22 +913,30 @@ function VideoGallery() {
         <Reveal delay={0.15}>
           <div className="mt-12 flex flex-wrap gap-2">
             {cats.map((c) => (
-              <span key={c} className="pill pill-light text-sm" style={{ height: 44, padding: "0 1.125rem" }}>
+              <button
+                key={c}
+                onClick={() => setActive(c)}
+                className={`pill text-sm ${active === c ? "pill-dark" : "pill-light"} hover-lift`}
+                style={{ height: 44, padding: "0 1.125rem" }}
+              >
                 {c}
-              </span>
+              </button>
             ))}
           </div>
         </Reveal>
 
-        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
-          {[0, 1, 2].map((i) => (
-            <Reveal key={i} delay={i * 0.08}>
-              <button className="group relative block aspect-video w-full overflow-hidden rounded-3xl bg-ink">
+        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {list.map((v, i) => (
+            <Reveal key={v.id} delay={(i % 3) * 0.08}>
+              <button
+                onClick={() => setPlaying(v.id)}
+                className="group relative block aspect-video w-full overflow-hidden rounded-3xl bg-ink"
+              >
                 <img
-                  src={heroImg}
-                  alt="Відео операції"
+                  src={`https://img.youtube.com/vi/${v.id}/hqdefault.jpg`}
+                  alt={`Відео — ${v.cat}`}
                   loading="lazy"
-                  className="h-full w-full object-cover opacity-70 transition-opacity group-hover:opacity-100"
+                  className="h-full w-full object-cover opacity-80 transition-all group-hover:scale-105 group-hover:opacity-100"
                 />
                 <span className="absolute inset-0 grid place-items-center">
                   <span className="grid h-16 w-16 place-items-center rounded-full bg-bone/95 text-ink transition-transform group-hover:scale-110">
@@ -944,64 +944,127 @@ function VideoGallery() {
                   </span>
                 </span>
                 <span className="absolute bottom-4 left-4 rounded-full bg-ink/70 px-3 py-1 text-xs text-bone backdrop-blur">
-                  {cats[i]}
+                  {v.cat}
                 </span>
               </button>
             </Reveal>
           ))}
         </div>
       </div>
+
+      {playing && (
+        <div
+          className="fixed inset-0 z-[100] grid place-items-center bg-ink/90 p-4 backdrop-blur-sm"
+          onClick={() => setPlaying(null)}
+        >
+          <div className="relative w-full max-w-5xl" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setPlaying(null)}
+              aria-label="Закрити"
+              className="absolute -top-12 right-0 grid h-10 w-10 place-items-center rounded-full bg-bone text-ink"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <div className="aspect-video overflow-hidden rounded-2xl bg-black">
+              <iframe
+                src={`https://www.youtube.com/embed/${playing}?autoplay=1`}
+                title="SVARMED video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="h-full w-full"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
 
 function Doctors() {
-  const docs = [
-    {
-      name: "Олександр Іваненко",
-      spec: "Хірург-флеболог",
-      city: "Київ",
-      quote:
-        "Технологія SVARMED змінила підхід нашої клініки до ЕВЕЗ — економічно вигідно і безпечно для пацієнта.",
-    },
-    {
-      name: "Марина Коваль",
-      spec: "Гінеколог-онколог",
-      city: "Львів",
-      quote:
-        "Мінімальна термічна травма і надійний гемостаз. Працюю на Dr.Nic щодня — обладнання стабільне.",
-    },
-    {
-      name: "Андрій Петренко",
-      spec: "Абдомінальний хірург",
-      city: "Дніпро",
-      quote:
-        "MARK AI скоротив час складних резекцій. Бригада менше втомлюється — більше операцій на день.",
-    },
-  ];
   return (
     <section className="bg-ink px-6 py-32 text-bone md:px-10 md:py-40">
       <div className="mx-auto max-w-[1440px]">
         <Reveal>
-          <Eyebrow>лікарі</Eyebrow>
+          <Eyebrow>нам довіряють</Eyebrow>
           <h2 className="display mt-4 text-[clamp(2.25rem,6vw,5.5rem)]">
-            З нами <span className="text-rose">працюють</span>
+            Хірурги, які працюють <br />з <span className="text-rose">SVARMED</span>
           </h2>
         </Reveal>
 
+        <Reveal delay={0.1}>
+          <div className="mt-16 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.02] p-4 md:p-8">
+            <img
+              src={SURGEONS_GRID}
+              alt="Хірурги, які працюють з SVARMED"
+              loading="lazy"
+              className="w-full"
+              onError={(e) => {
+                const target = e.currentTarget;
+                target.style.opacity = "0.4";
+                target.alt = "Сітка хірургів (TODO_ASSET)";
+              }}
+            />
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.15}>
+          <div className="mt-10 flex items-center gap-3 text-bone/60">
+            <Quote className="h-5 w-5 text-rose" />
+            <p className="text-sm md:text-base">
+              Технологія, якій довіряють провідні хірурги України.
+            </p>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+function Publications() {
+  // Placeholder cards — TODO_ASSET: реальні статті від клієнта
+  const items = [
+    { title: "Біозварювання тканин у сучасній хірургії", source: "Хірургія України", year: "2024" },
+    { title: "Ендовенозне електрозварювання вен — клінічний досвід", source: "Флебологія", year: "2023" },
+    { title: "Технологія Біозварювання в гінекології", source: "Жіноче здоров'я", year: "2023" },
+  ];
+  return (
+    <section className="bg-bone px-6 py-32 md:px-10 md:py-40">
+      <div className="mx-auto max-w-[1440px]">
+        <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
+          <Reveal>
+            <Eyebrow>публікації</Eyebrow>
+            <h2 className="display mt-4 text-[clamp(2.25rem,6vw,5.5rem)] text-ink">
+              Наукові <span className="text-rose-deep">публікації</span>
+            </h2>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <p className="max-w-md text-base text-ink-soft md:text-lg">
+              Дослідження, клінічні протоколи й огляди технології Біозварювання у фахових виданнях.
+            </p>
+          </Reveal>
+        </div>
+
         <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3">
-          {docs.map((d, i) => (
-            <Reveal key={d.name} delay={i * 0.1}>
-              <article className="flex h-full flex-col rounded-3xl border border-white/10 bg-white/[0.03] p-8 transition-colors hover:border-rose/40">
-                <Quote className="h-6 w-6 text-rose" />
-                <p className="mt-6 text-lg text-bone/85">"{d.quote}"</p>
-                <div className="mt-8 border-t border-white/10 pt-6">
-                  <div className="font-display text-lg">{d.name}</div>
-                  <div className="mt-1 text-sm text-bone/60">
-                    {d.spec} · {d.city}
+          {items.map((p, i) => (
+            <Reveal key={p.title} delay={i * 0.08}>
+              <a
+                href="#"
+                className="group flex h-full flex-col justify-between rounded-3xl border border-ink/10 bg-white p-7 transition-all hover:-translate-y-1 hover:border-rose hover:shadow-[0_20px_60px_-30px_rgba(52,22,59,0.35)]"
+              >
+                <div className="aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br from-rose/40 to-ink/10">
+                  <div className="grid h-full place-items-center">
+                    <FileText className="h-10 w-10 text-ink/30" />
                   </div>
                 </div>
-              </article>
+                <div className="mt-6">
+                  <div className="font-display text-xs uppercase tracking-widest text-rose-deep">
+                    {p.source} · {p.year}
+                  </div>
+                  <h3 className="mt-3 text-lg text-ink md:text-xl">{p.title}</h3>
+                </div>
+                <ArrowUpRight className="mt-6 h-4 w-4 text-ink/40 transition-transform group-hover:rotate-45 group-hover:text-ink" />
+              </a>
             </Reveal>
           ))}
         </div>
@@ -1064,26 +1127,182 @@ function Certificates() {
   );
 }
 
+function FinalCTA() {
+  const [submitted, setSubmitted] = useState(false);
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+  return (
+    <section id="contact" className="bg-bone px-6 py-32 md:px-10 md:py-40">
+      <div className="mx-auto grid max-w-[1440px] gap-16 md:grid-cols-12">
+        <div className="md:col-span-6">
+          <Reveal>
+            <Eyebrow>контакти</Eyebrow>
+            <h2 className="display mt-6 text-[clamp(2.25rem,6vw,5.5rem)] leading-[0.95] text-ink">
+              Замовте апробацію <br />
+              <span className="text-rose-deep">обладнання</span>
+            </h2>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <p className="mt-8 max-w-md text-lg text-ink-soft">
+              Отримайте консультацію, демонстрацію технології та можливість апробації у вашій клініці.
+            </p>
+          </Reveal>
+          <Reveal delay={0.2}>
+            <div className="mt-10 space-y-4 text-ink-soft">
+              <a href="mailto:svarmed@gmail.com" className="flex items-center gap-4 hover:text-ink">
+                <Mail className="h-4 w-4" /> svarmed@gmail.com
+              </a>
+              <div className="flex items-center gap-4">
+                <MapPin className="h-4 w-4" /> Київ, вул. Куренівська, 18
+              </div>
+              <a
+                href={FACEBOOK_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-4 hover:text-ink"
+              >
+                <Facebook className="h-4 w-4" /> facebook.com/svarmed.ua
+              </a>
+            </div>
+          </Reveal>
+        </div>
+
+        <Reveal delay={0.15} className="md:col-span-6">
+          <form
+            onSubmit={onSubmit}
+            className="rounded-3xl border border-ink/10 bg-white p-8 md:p-10"
+          >
+            {submitted ? (
+              <div className="grid place-items-center py-20 text-center">
+                <div className="grid h-16 w-16 place-items-center rounded-full bg-rose">
+                  <Check className="h-6 w-6 text-ink" />
+                </div>
+                <p className="mt-6 font-display text-2xl text-ink">Заявку прийнято</p>
+                <p className="mt-2 text-ink-soft">Ми зв'яжемось з вами найближчим часом.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {[
+                  { label: "Ім'я", type: "text", name: "name" },
+                  { label: "Телефон", type: "tel", name: "phone" },
+                  { label: "Лікарня / клініка", type: "text", name: "clinic" },
+                  { label: "Спеціальність", type: "text", name: "spec" },
+                ].map((f) => (
+                  <label key={f.name} className="block">
+                    <span className="text-xs uppercase tracking-wider text-ink-soft">{f.label}</span>
+                    <input
+                      required
+                      type={f.type}
+                      name={f.name}
+                      className="mt-2 block w-full border-b border-ink/20 bg-transparent pb-3 text-lg text-ink outline-none transition-colors focus:border-ink"
+                    />
+                  </label>
+                ))}
+                <label className="block">
+                  <span className="text-xs uppercase tracking-wider text-ink-soft">Повідомлення</span>
+                  <textarea
+                    name="message"
+                    rows={3}
+                    className="mt-2 block w-full border-b border-ink/20 bg-transparent pb-3 text-lg text-ink outline-none transition-colors focus:border-ink"
+                  />
+                </label>
+                <button type="submit" className="pill pill-dark hover-lift mt-6 w-full justify-center">
+                  Замовити апробацію <ArrowUpRight className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+          </form>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="border-t border-ink/10 bg-bone px-6 pb-10 pt-16 md:px-10">
+      <div className="mx-auto max-w-[1440px]">
+        <div className="grid gap-10 md:grid-cols-12">
+          <div className="md:col-span-4">
+            <div className="flex items-center gap-3">
+              <img
+                src={LOGO_URL}
+                alt="SVARMED"
+                className="h-7 w-auto invert"
+                onError={(e) => (e.currentTarget.style.display = "none")}
+              />
+              <span className="font-display text-base font-extrabold tracking-[0.18em] text-ink">SVARMED</span>
+            </div>
+            <p className="mt-6 max-w-xs text-sm text-ink-soft">
+              Українська технологія електрозварювання живих тканин для сучасної хірургії.
+            </p>
+          </div>
+          <div className="md:col-span-3">
+            <h4 className="font-display text-sm text-ink">Контакти</h4>
+            <ul className="mt-4 space-y-2 text-sm text-ink-soft">
+              <li>svarmed@gmail.com</li>
+              <li>Київ, вул. Куренівська, 18</li>
+              <li>
+                <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" className="hover:text-ink">
+                  Facebook
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div className="md:col-span-3">
+            <h4 className="font-display text-sm text-ink">Навігація</h4>
+            <ul className="mt-4 space-y-2 text-sm text-ink-soft">
+              <li><a href="#equipment" className="hover:text-ink">Обладнання</a></li>
+              <li><a href="#contact" className="hover:text-ink">Апробація</a></li>
+              <li>
+                <a href="#" className="hover:text-ink" title="TODO_ASSET: Google-doc від клієнта">
+                  Стерилізація
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div className="flex gap-3 md:col-span-2 md:justify-end">
+            <a
+              href={FACEBOOK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook"
+              className="grid h-11 w-11 place-items-center rounded-full border border-ink/15 text-ink hover:bg-ink hover:text-bone"
+            >
+              <Facebook className="h-4 w-4" />
+            </a>
+          </div>
+        </div>
+        <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-ink/10 pt-6 text-xs text-ink-soft md:flex-row">
+          <span>© {new Date().getFullYear()} ТОВ «ЗВАРМЕД». Всі права захищені.</span>
+          <a href="#contact" className="hover:text-ink">Замовити апробацію</a>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
 function Index() {
   return (
     <main className="bg-bone">
       <Hero />
+      <TrustedBy />
       <About />
       <Essence />
       <WhatIsBioWelding />
       <Advantages />
-      <TrustedBy />
       <Equipment />
       <InstrumentsCatalog />
       <VideoGallery />
-      <VideoBlock />
       <EVEZ />
       <Directions />
       <Doctors />
+      <Publications />
       <Certificates />
       <FinalCTA />
       <Footer />
     </main>
   );
 }
-
