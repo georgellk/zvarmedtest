@@ -899,7 +899,7 @@ function Doctors() {
 function Publications() {
   const { t } = useLang();
   return (
-    <section className="bg-bone px-6 py-32 md:px-10 md:py-40");
+    <section className="bg-bone px-6 py-32 md:px-10 md:py-40">
       <div className="mx-auto max-w-[1440px]">
         <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
           <Reveal>
