@@ -591,6 +591,9 @@ const INSTRUMENT_ITEMS: { cat: string; name: string; img: string }[] = [
   { cat: "inshe", name: "Біполярна «ложка макарова»", img: "/assets/catalog/instruments/instr_25.jpg" },
   { cat: "inshe", name: "Столик анестезіолога медичний", img: "/assets/catalog/instruments/instr_26.jpg" },
   { cat: "inshe", name: "Стійка хірургічна мала", img: "/assets/catalog/instruments/instr_27.jpg" },
+  { cat: "lor", name: "Електрод скальпель «серповидний»", img: "/assets/catalog/instruments/instr_28.jpg" },
+  { cat: "laparo", name: "Лапароскопічний дисектор/граспер", img: "/assets/catalog/instruments/instr_29.jpg" },
+  { cat: "kabeli", name: "Кабель силіконовий 3м для затискачів", img: "/assets/catalog/instruments/instr_30.jpg" },
 ];
 
 function CatalogOverlay({ openSlug, onClose }: { openSlug: string | null; onClose: () => void }) {
