@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
   ArrowUpRight,
   Mail,
@@ -553,8 +553,128 @@ function Equipment() {
   );
 }
 
+const INSTRUMENT_CATEGORIES = [
+  { slug: "lor", label: "ЛОР-інструменти" },
+  { slug: "zondy", label: "Ендовенозні зонди" },
+  { slug: "laparo", label: "Лапароскопічні інструменти" },
+  { slug: "zatyskachi", label: "Затискачі" },
+  { slug: "nozhytsi", label: "Ножиці" },
+  { slug: "pintsety", label: "Пінцети" },
+  { slug: "kabeli", label: "Біполярні кабелі" },
+  { slug: "inshe", label: "Інший інструмент" },
+] as const;
+
+const INSTRUMENT_ITEMS: { cat: string; name: string; img: string }[] = [
+  { cat: "lor", name: "Електрод для каутеризації носової раковини (s-подібний)", img: "/assets/catalog/instruments/instr_01.jpg" },
+  { cat: "lor", name: "Електрод «кулька» прямий, 4,5 мм", img: "/assets/catalog/instruments/instr_02.jpg" },
+  { cat: "lor", name: "Електрод «кулька» вигнутий, 4,5 мм", img: "/assets/catalog/instruments/instr_03.jpg" },
+  { cat: "zondy", name: "Зонд ендовазальний для лікування варикозу, біполярний", img: "/assets/catalog/instruments/instr_04.jpg" },
+  { cat: "zondy", name: "Зонд «проктологічний», біполярний", img: "/assets/catalog/instruments/instr_05.jpg" },
+  { cat: "zondy", name: "Зонд ендовазальний для лікування варикозу", img: "/assets/catalog/instruments/instr_06.jpg" },
+  { cat: "zondy", name: "Інтродюсер для ЕВЕЗ", img: "/assets/catalog/instruments/instr_07.jpg" },
+  { cat: "laparo", name: "Адаптер для підключення лапароскопічних інструментів", img: "/assets/catalog/instruments/instr_09.jpg" },
+  { cat: "zatyskachi", name: "Затискач «оптимальний» 220 мм", img: "/assets/catalog/instruments/instr_10.jpg" },
+  { cat: "zatyskachi", name: "Затискач 180 мм", img: "/assets/catalog/instruments/instr_11.jpg" },
+  { cat: "zatyskachi", name: "Затискач 160 мм", img: "/assets/catalog/instruments/instr_12.jpg" },
+  { cat: "zatyskachi", name: "Затискач 270 мм", img: "/assets/catalog/instruments/instr_13.jpg" },
+  { cat: "nozhytsi", name: "Затискач-ножиці «оптимальний» 220 мм", img: "/assets/catalog/instruments/instr_14.jpg" },
+  { cat: "nozhytsi", name: "Затискач-ножиці 160 мм", img: "/assets/catalog/instruments/instr_15.jpg" },
+  { cat: "nozhytsi", name: "Затискач-ножиці 180 мм", img: "/assets/catalog/instruments/instr_16.jpg" },
+  { cat: "pintsety", name: "Пінцет байонетний біполярний 220 мм", img: "/assets/catalog/instruments/instr_17.jpg" },
+  { cat: "pintsety", name: "Пінцет фігурний біполярний 180 мм", img: "/assets/catalog/instruments/instr_18.jpg" },
+  { cat: "pintsety", name: "Пінцет фігурний біполярний 220 мм", img: "/assets/catalog/instruments/instr_19.jpg" },
+  { cat: "pintsety", name: "Пінцет біполярний прямий 220 мм", img: "/assets/catalog/instruments/instr_20.jpg" },
+  { cat: "pintsety", name: "Пінцет біполярний зігнутий 220 мм", img: "/assets/catalog/instruments/instr_21.jpg" },
+  { cat: "pintsety", name: "Пінцет біполярний прямий 180 мм", img: "/assets/catalog/instruments/instr_22.jpg" },
+  { cat: "kabeli", name: "Кабель для біполярних ЛОР-інструментів", img: "/assets/catalog/instruments/instr_23.jpg" },
+  { cat: "kabeli", name: "Кабель для пінцетів", img: "/assets/catalog/instruments/instr_24.jpg" },
+  { cat: "inshe", name: "Біполярна «ложка макарова»", img: "/assets/catalog/instruments/instr_25.jpg" },
+  { cat: "inshe", name: "Столик анестезіолога медичний", img: "/assets/catalog/instruments/instr_26.jpg" },
+  { cat: "inshe", name: "Стійка хірургічна мала", img: "/assets/catalog/instruments/instr_27.jpg" },
+];
+
+function CatalogOverlay({ openSlug, onClose }: { openSlug: string | null; onClose: () => void }) {
+  useEffect(() => {
+    if (!openSlug) return;
+    document.body.style.overflow = "hidden";
+    const tmr = setTimeout(() => {
+      document.getElementById(`cat-${openSlug}`)?.scrollIntoView({ block: "start" });
+    }, 50);
+    return () => {
+      document.body.style.overflow = "";
+      clearTimeout(tmr);
+    };
+  }, [openSlug]);
+
+  if (!openSlug) return null;
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="fixed inset-0 z-[100] overflow-y-auto bg-bone"
+    >
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-ink/10 bg-bone/95 px-6 py-4 backdrop-blur md:px-10">
+        <div className="flex items-center gap-3">
+          <SvarmedLogo className="h-7 w-auto text-ink" />
+          <span className="hidden font-display text-sm text-ink-soft sm:inline">— Каталог інструментів</span>
+        </div>
+        <button
+          onClick={onClose}
+          aria-label="Закрити"
+          className="grid h-10 w-10 place-items-center rounded-full border border-ink/15 text-ink transition hover:bg-ink hover:text-bone"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </header>
+
+      <div className="sticky top-[65px] z-10 flex gap-2 overflow-x-auto border-b border-ink/10 bg-bone/95 px-6 py-3 backdrop-blur md:px-10">
+        {INSTRUMENT_CATEGORIES.map((c) => (
+          <button
+            key={c.slug}
+            onClick={() =>
+              document.getElementById(`cat-${c.slug}`)?.scrollIntoView({ behavior: "smooth", block: "start" })
+            }
+            className="whitespace-nowrap rounded-full border border-ink/15 px-4 py-1.5 text-xs text-ink-soft transition hover:border-rose-deep hover:text-rose-deep"
+          >
+            {c.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="mx-auto max-w-[1440px] px-6 pb-28 pt-8 md:px-10">
+        {INSTRUMENT_CATEGORIES.map((c) => {
+          const list = INSTRUMENT_ITEMS.filter((it) => it.cat === c.slug);
+          if (!list.length) return null;
+          return (
+            <section key={c.slug} id={`cat-${c.slug}`} className="scroll-mt-36 pt-12 first:pt-2">
+              <h3 className="display text-2xl text-ink md:text-3xl">{c.label}</h3>
+              <div className="mt-7 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
+                {list.map((it) => (
+                  <div key={it.name} className="group">
+                    <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl bg-white p-5 ring-1 ring-ink/[0.06] transition group-hover:ring-ink/20">
+                      <img
+                        src={it.img}
+                        alt={it.name}
+                        loading="lazy"
+                        className="max-h-full w-auto object-contain transition duration-500 group-hover:scale-[1.04]"
+                      />
+                    </div>
+                    <p className="mt-3 text-[10px] uppercase tracking-[0.18em] text-ink/40">Біполярні інструменти</p>
+                    <h4 className="mt-1 text-sm font-medium leading-snug text-ink">{it.name}</h4>
+                  </div>
+                ))}
+              </div>
+            </section>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+}
+
 function InstrumentsCatalog() {
   const { t } = useLang();
+  const [openSlug, setOpenSlug] = useState<string | null>(null);
   return (
     <section className="bg-bone px-6 py-20 md:px-10 md:py-28">
       <div className="mx-auto grid max-w-[1440px] gap-16 md:grid-cols-12">
@@ -582,20 +702,26 @@ function InstrumentsCatalog() {
         </div>
         <div className="md:col-span-7">
           <ul className="divide-y divide-ink/10 border-y border-ink/10">
-            {t.instruments.cats.map((c, i) => (
-              <Reveal key={c} delay={i * 0.05}>
-                <li className="group flex cursor-pointer items-center justify-between py-6 transition-colors hover:text-rose-deep">
-                  <span className="flex items-baseline gap-6">
-                    <span className="font-display text-xs text-ink/40">0{i + 1}</span>
-                    <span className="text-2xl text-ink group-hover:text-rose-deep md:text-3xl">{c}</span>
-                  </span>
-                  <ArrowUpRight className="h-5 w-5 text-ink/40 transition-all group-hover:rotate-45 group-hover:text-rose-deep" />
+            {INSTRUMENT_CATEGORIES.map((c, i) => (
+              <Reveal key={c.slug} delay={i * 0.05}>
+                <li>
+                  <button
+                    onClick={() => setOpenSlug(c.slug)}
+                    className="group flex w-full items-center justify-between py-5 text-left transition-colors hover:text-rose-deep"
+                  >
+                    <span className="flex items-baseline gap-6">
+                      <span className="font-display text-xs text-ink/40">0{i + 1}</span>
+                      <span className="text-2xl text-ink group-hover:text-rose-deep md:text-3xl">{c.label}</span>
+                    </span>
+                    <ArrowUpRight className="h-5 w-5 text-ink/40 transition-all group-hover:rotate-45 group-hover:text-rose-deep" />
+                  </button>
                 </li>
               </Reveal>
             ))}
           </ul>
         </div>
       </div>
+      <CatalogOverlay openSlug={openSlug} onClose={() => setOpenSlug(null)} />
     </section>
   );
 }
