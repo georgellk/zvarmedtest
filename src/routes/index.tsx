@@ -299,24 +299,24 @@ function Hero() {
 function Essence() {
   const { t } = useLang();
   return (
-    <section className="bg-bone px-6 py-32 md:px-10 md:py-48">
+    <section className="bg-bone px-6 py-16 md:px-10 md:py-24">
       <div className="mx-auto max-w-[1240px] text-center">
         <Reveal>
           <Eyebrow>{t.essence.eyebrow}</Eyebrow>
         </Reveal>
         <Reveal delay={0.1}>
-          <h2 className="display mt-8 text-[clamp(1.85rem,4.6vw,4rem)] text-ink">
+          <h2 className="display mt-5 text-[clamp(1.85rem,4.6vw,4rem)] text-ink">
             {t.essence.title1} <br />
             <span className="text-rose-deep">{t.essence.title2}</span>
           </h2>
         </Reveal>
         <Reveal delay={0.15}>
-          <p className="mx-auto mt-8 max-w-2xl text-lg text-ink-soft md:text-xl">
+          <p className="mx-auto mt-5 max-w-2xl text-lg text-ink-soft md:text-xl">
             {t.essence.desc}
           </p>
         </Reveal>
 
-        <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-3">
           {t.essence.badges.map((label, i) => (
             <Reveal delay={i * 0.1} key={label} className="flex justify-center">
               <div className="pill pill-rose hover-lift">
@@ -336,7 +336,7 @@ function Essence() {
 function WhatIsBioWelding() {
   const { t } = useLang();
   return (
-    <section className="bg-ink px-6 py-32 text-bone md:px-10 md:py-40">
+    <section className="bg-ink px-6 py-20 text-bone md:px-10 md:py-28">
       <div className="mx-auto grid max-w-[1440px] gap-16 md:grid-cols-12">
         <div className="md:col-span-5">
           <Reveal>
@@ -372,7 +372,7 @@ function WhatIsBioWelding() {
 function Advantages() {
   const { t } = useLang();
   return (
-    <section className="bg-bone px-6 py-32 md:px-10 md:py-40">
+    <section className="bg-bone px-6 py-20 md:px-10 md:py-28">
       <div className="mx-auto max-w-[1440px]">
         <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
           <Reveal>
@@ -495,7 +495,7 @@ function Equipment() {
     fallback: PRODUCT_PHOTOS[i].fallback,
   }));
   return (
-    <section id="equipment" className="bg-ink px-6 py-32 text-bone md:px-10 md:py-40">
+    <section id="equipment" className="bg-ink px-6 py-20 text-bone md:px-10 md:py-28">
       <div className="mx-auto max-w-[1440px]">
         <Reveal>
           <Eyebrow>{t.equipment.eyebrow}</Eyebrow>
@@ -556,7 +556,7 @@ function Equipment() {
 function InstrumentsCatalog() {
   const { t } = useLang();
   return (
-    <section className="bg-bone px-6 py-32 md:px-10 md:py-40">
+    <section className="bg-bone px-6 py-20 md:px-10 md:py-28">
       <div className="mx-auto grid max-w-[1440px] gap-16 md:grid-cols-12">
         <div className="md:col-span-5">
           <Reveal>
@@ -603,7 +603,7 @@ function InstrumentsCatalog() {
 function EVEZ() {
   const { t } = useLang();
   return (
-    <section className="relative overflow-hidden bg-ink px-6 py-32 text-bone md:px-10 md:py-40">
+    <section className="relative overflow-hidden bg-ink px-6 py-20 text-bone md:px-10 md:py-28">
       <div className="pointer-events-none absolute -right-32 top-1/4 h-[500px] w-[500px] rounded-full bg-glow/20 blur-[120px]" />
 
       <div className="relative mx-auto max-w-[1440px]">
@@ -684,7 +684,7 @@ function EVEZ() {
 function Directions() {
   const { t } = useLang();
   return (
-    <section className="bg-bone px-6 py-32 md:px-10 md:py-40">
+    <section className="bg-bone px-6 py-20 md:px-10 md:py-28">
       <div className="mx-auto max-w-[1440px]">
         <Reveal>
           <Eyebrow>{t.directions.eyebrow}</Eyebrow>
@@ -747,7 +747,7 @@ function TrustedBy() {
 function About() {
   const { t } = useLang();
   return (
-    <section className="bg-ink px-6 py-32 text-bone md:px-10 md:py-40">
+    <section className="bg-ink px-6 py-20 text-bone md:px-10 md:py-28">
       <div className="mx-auto grid max-w-[1440px] gap-16 md:grid-cols-12">
         <div className="md:col-span-7">
           <Reveal>
@@ -801,7 +801,7 @@ function VideoGallery() {
   const catLabel = (k: string) => (k === "__all" ? t.videos.all : t.videos.cats[k] ?? k);
 
   return (
-    <section className="bg-bone px-6 py-32 md:px-10 md:py-40">
+    <section className="bg-bone px-6 py-20 md:px-10 md:py-28">
       <div className="mx-auto max-w-[1440px]">
         <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
           <Reveal>
@@ -889,7 +889,7 @@ function VideoGallery() {
 function Doctors() {
   const { t } = useLang();
   return (
-    <section className="bg-ink px-6 py-32 text-bone md:px-10 md:py-40">
+    <section className="bg-ink px-6 py-20 text-bone md:px-10 md:py-28">
       <div className="mx-auto max-w-[1440px]">
         <Reveal>
           <Eyebrow>{t.doctors.eyebrow}</Eyebrow>
@@ -927,7 +927,7 @@ function Doctors() {
 function Publications() {
   const { t } = useLang();
   return (
-    <section className="bg-bone px-6 py-32 md:px-10 md:py-40">
+    <section className="bg-bone px-6 py-20 md:px-10 md:py-28">
       <div className="mx-auto max-w-[1440px]">
         <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
           <Reveal>
@@ -972,7 +972,7 @@ function Publications() {
 function Certificates() {
   const { t } = useLang();
   return (
-    <section className="bg-bone px-6 py-32 md:px-10 md:py-40">
+    <section className="bg-bone px-6 py-20 md:px-10 md:py-28">
       <div className="mx-auto max-w-[1440px]">
         <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
           <Reveal>
@@ -1029,7 +1029,7 @@ function FinalCTA() {
     { label: t.cta.fields.spec, type: "text", name: "spec" },
   ];
   return (
-    <section id="contact" className="bg-bone px-6 py-32 md:px-10 md:py-40">
+    <section id="contact" className="bg-bone px-6 py-20 md:px-10 md:py-28">
       <div className="mx-auto grid max-w-[1440px] gap-16 md:grid-cols-12">
         <div className="md:col-span-6">
           <Reveal>
