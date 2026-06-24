@@ -714,33 +714,29 @@ function TrustedBy() {
   const { t } = useLang();
   const row = [...CLINIC_LOGOS, ...CLINIC_LOGOS];
   return (
-    <section className="overflow-hidden border-y border-ink/10 bg-bone py-20">
+    <section className="overflow-hidden border-y border-ink/10 bg-bone py-10">
       <div className="mx-auto max-w-[1440px] px-6 md:px-10">
         <Reveal>
-          <p className="mb-12 text-center text-xs uppercase tracking-[0.3em] text-ink-soft">
+          <p className="mb-7 text-center text-xs uppercase tracking-[0.3em] text-ink-soft">
             {t.trusted.label}
           </p>
         </Reveal>
       </div>
-      <div className="group relative w-full overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_6%,#000_94%,transparent)]">
+      <div className="relative w-full overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_4%,#000_96%,transparent)]">
         <motion.div
-          className="flex w-max items-center gap-8 md:gap-12"
+          className="flex w-max items-center gap-14 md:gap-20"
           animate={{ x: ["0%", "-50%"] }}
           transition={{ duration: 55, ease: "linear", repeat: Infinity }}
         >
           {row.map((src, i) => (
-            <div
+            <img
               key={i}
-              className="flex h-[5.5rem] shrink-0 items-center justify-center rounded-2xl bg-white px-7 shadow-[0_1px_3px_rgba(20,20,20,0.07)] ring-1 ring-ink/[0.06]"
-            >
-              <img
-                src={src}
-                alt={t.trusted.alt((i % CLINIC_LOGOS.length) + 1)}
-                loading="lazy"
-                className="h-9 w-auto max-w-[150px] object-contain opacity-90 transition group-hover:opacity-100"
-                onError={(e) => (e.currentTarget.style.visibility = "hidden")}
-              />
-            </div>
+              src={src}
+              alt={t.trusted.alt((i % CLINIC_LOGOS.length) + 1)}
+              loading="lazy"
+              className="h-16 w-auto max-w-[220px] shrink-0 object-contain"
+              onError={(e) => (e.currentTarget.style.visibility = "hidden")}
+            />
           ))}
         </motion.div>
       </div>
