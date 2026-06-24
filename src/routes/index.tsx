@@ -442,6 +442,15 @@ function ProductModal({
         <h3 className="display mt-4 text-[clamp(1.5rem,3vw,2.5rem)]">{product.modal.title}</h3>
         <p className="mt-6 max-w-2xl text-base text-ink-soft md:text-lg">{product.modal.body}</p>
 
+        <div className="mt-8 flex items-center justify-center overflow-hidden rounded-2xl bg-white p-6 ring-1 ring-ink/10">
+          <ImageWithFallback
+            src={product.photo}
+            fallback={product.fallback}
+            alt={product.name}
+            className="max-h-[340px] w-auto object-contain"
+          />
+        </div>
+
         <div className="mt-10 grid gap-8 md:grid-cols-2">
           <div>
             <h4 className="eyebrow mb-4">{t.equipment.advHeader}</h4>
@@ -1279,7 +1288,7 @@ function Footer() {
               <li><a href="#equipment" className="hover:text-ink">{t.footer.equipmentLink}</a></li>
               <li><a href="#contact" className="hover:text-ink">{t.footer.contactLink}</a></li>
               <li>
-                <a href="#" className="hover:text-ink">
+                <a href="https://drive.google.com/file/d/10DNwL1q5J6ZcpSWzf-7nqzO51-zVP_rI/view" target="_blank" rel="noopener noreferrer" className="hover:text-ink">
                   {t.footer.sterilization}
                 </a>
               </li>
