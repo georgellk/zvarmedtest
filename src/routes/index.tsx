@@ -6,6 +6,7 @@ import {
   Mail,
   MapPin,
   Facebook,
+  Instagram,
   Play,
   ChevronRight,
   Check,
@@ -47,6 +48,7 @@ export const Route = createFileRoute("/")({
 
 const LOGO_URL = "https://svarmed.lkdm.uk/assets/catalog/logos/logo-svarmed.png";
 const FACEBOOK_URL = "https://www.facebook.com/svarmed.ua";
+const INSTAGRAM_URL = "https://www.instagram.com/svarmed.ua/";
 const HERO_IMAGE =
   "https://drive.google.com/thumbnail?id=1rQc5AkNLWiy5bFbnJ4KjXiXHOOKgsiKW&sz=w2400";
 const PROBE_IMAGE =
@@ -157,18 +159,29 @@ function LangSwitch({ tone = "dark" }: { tone?: "dark" | "light" }) {
 
 /* ---------- sections ---------- */
 
+function SvarmedLogo({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 152 39" className={className} fill="currentColor" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SVARMED">
+      <path d="M15.5 28L10.3 33.2L15.5 38.4L20.7 33.2L15.5 28ZM26.9 16.6L20.7 22.8L25.9 28L31.1 22.8L26.9 16.6ZM4.2 16.6L0 22.8L5.2 28L10.4 22.8L4.2 16.6Z" />
+      <path d="M15.5 0L8.39999 10.4L15.5 17.6L22.7 10.4L15.5 0Z" />
+      <path d="M58.3 14.5L57 16.6C55.6 15.7 54 15.2 52.1 15.2C50.1 15.2 49.1 15.6 49.1 16.5C49.1 16.8 49.2 17.1 49.5 17.2C49.8 17.3 50.2 17.4 50.7 17.5L54.4 17.9C57.3 18.2 58.7 19.5 58.7 21.6C58.7 22.9 58.1 24 56.9 24.6C55.7 25.3 54.2 25.6 52.2 25.6C49.7 25.6 47.6 24.9 45.8 23.6L47.1 21.4C48.7 22.6 50.6 23.1 52.5 23.1C53.5 23.1 54.4 23 55 22.7C55.6 22.4 55.9 22 55.9 21.5C55.9 21.2 55.8 20.9 55.6 20.7C55.4 20.5 55 20.4 54.5 20.3L50.3 19.8C49 19.7 47.9 19.3 47.2 18.7C46.5 18.1 46.2 17.3 46.2 16.2C46.2 14.9 46.7 14 47.8 13.3C48.9 12.6 50.3 12.3 52 12.3C54.6 12.6 56.7 13.3 58.3 14.5Z" />
+      <path d="M59.6 12.9H62.7L66.8 22.9H67.4L71.5 12.9H74.5L69.1 25.4H65L59.6 12.9Z" />
+      <path d="M79.7 12.9H84.3L89.6 25.3H86.6L85.8 23.4H78.1L77.3 25.3H74.3L79.7 12.9ZM81.5 15.4L79.2 21H84.7L82.5 15.4H81.5Z" />
+      <path d="M94.2 15.5V20H98.6C99.3 20 99.9 19.8 100.4 19.4C100.8 19 101.1 18.5 101.1 17.8C101.1 17.1 100.9 16.5 100.4 16.1C100 15.7 99.4 15.5 98.6 15.5H94.2ZM91.4 12.9H98.7C100.2 12.9 101.4 13.4 102.4 14.3C103.4 15.2 103.9 16.4 103.9 17.8C103.9 19.7 103.1 21.1 101.5 21.9L103.4 25.3H100.3L98.8 22.5H94.2V25.3H91.4V12.9Z" />
+      <path d="M105.7 12.9H109.4L113.8 22H113.9L118.5 12.9H122.1V25.4H119.3V16.7H119.2L114.9 25.4H112.6L108.5 16.7H108.4V25.4H105.7V12.9Z" />
+      <path d="M124.3 12.9H135.6V15.5H127.1V17.8H134.7V20.3H127.1V22.8H135.9V25.4H124.3V12.9Z" />
+      <path d="M140.8 15.5V22.8H144.4C145.5 22.8 146.5 22.5 147.2 21.8C147.9 21.1 148.3 20.2 148.3 19.2C148.3 18.1 147.9 17.3 147.2 16.6C146.5 15.9 145.5 15.6 144.4 15.6H140.8V15.5ZM138 12.9H144.4C146.2 12.9 147.7 13.5 149.1 14.7C150.4 15.9 151.1 17.4 151.1 19.2C151.1 21 150.4 22.5 149.1 23.7C147.8 24.9 146.2 25.5 144.4 25.5H138V12.9Z" />
+    </svg>
+  );
+}
+
 function Nav() {
   const { t } = useLang();
   return (
     <header className="fixed inset-x-0 top-0 z-50">
       <div className="mx-auto flex max-w-[1440px] items-center justify-between px-6 py-5 md:px-10">
         <a href="#top" className="flex items-center gap-3 text-bone">
-          <img
-            src={LOGO_URL}
-            alt="SVARMED"
-            className="h-9 w-auto"
-            onError={(e) => (e.currentTarget.style.display = "none")}
-          />
+          <SvarmedLogo className="h-8 w-auto" />
         </a>
         <div className="flex items-center gap-3">
           <LangSwitch tone="dark" />
@@ -180,6 +193,15 @@ function Nav() {
             className="grid h-12 w-12 place-items-center rounded-full border border-white/30 text-bone backdrop-blur-md hover:bg-white/10"
           >
             <Facebook className="h-4 w-4" />
+          </a>
+          <a
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram"
+            className="grid h-12 w-12 place-items-center rounded-full border border-white/30 text-bone backdrop-blur-md hover:bg-white/10"
+          >
+            <Instagram className="h-4 w-4" />
           </a>
           <a
             href="#contact"
@@ -1098,12 +1120,7 @@ function Footer() {
         <div className="grid gap-10 md:grid-cols-12">
           <div className="md:col-span-4">
             <div className="flex items-center gap-3">
-              <img
-                src={LOGO_URL}
-                alt="SVARMED"
-                className="h-8 w-auto"
-                onError={(e) => (e.currentTarget.style.display = "none")}
-              />
+              <SvarmedLogo className="h-8 w-auto text-ink" />
             </div>
             <p className="mt-6 max-w-xs text-sm text-ink-soft">{t.footer.tagline}</p>
             <div className="mt-6">
@@ -1118,6 +1135,11 @@ function Footer() {
               <li>
                 <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" className="hover:text-ink">
                   Facebook
+                </a>
+              </li>
+              <li>
+                <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="hover:text-ink">
+                  Instagram
                 </a>
               </li>
             </ul>
@@ -1143,6 +1165,15 @@ function Footer() {
               className="grid h-11 w-11 place-items-center rounded-full border border-ink/15 text-ink hover:bg-ink hover:text-bone"
             >
               <Facebook className="h-4 w-4" />
+            </a>
+            <a
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="grid h-11 w-11 place-items-center rounded-full border border-ink/15 text-ink hover:bg-ink hover:text-bone"
+            >
+              <Instagram className="h-4 w-4" />
             </a>
           </div>
         </div>
