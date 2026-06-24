@@ -55,8 +55,8 @@ const MARK_AI_PHOTO = "https://svarmed.lkdm.uk/assets/product-mark.jpg";
 const DR_NIC_PHOTO = "https://svarmed.lkdm.uk/assets/product-nic.jpg";
 const SURGEONS_GRID = "https://svarmed.lkdm.uk/assets/catalog/svarmed-grid-surgeons.png";
 
-const PARTNER_LOGOS = Array.from({ length: 17 }, (_, i) =>
-  `https://svarmed.lkdm.uk/assets/catalog/logos/partner_${String(i + 1).padStart(2, "0")}.png`,
+const CLINIC_LOGOS = Array.from({ length: 18 }, (_, i) =>
+  `https://svarmed.lkdm.uk/assets/catalog/logos/clinic_${String(i + 1).padStart(2, "0")}.png`,
 );
 
 const PRODUCT_PHOTOS = [
@@ -690,27 +690,37 @@ function Directions() {
 
 function TrustedBy() {
   const { t } = useLang();
+  const row = [...CLINIC_LOGOS, ...CLINIC_LOGOS];
   return (
-    <section className="border-y border-ink/10 bg-bone py-20">
+    <section className="overflow-hidden border-y border-ink/10 bg-bone py-20">
       <div className="mx-auto max-w-[1440px] px-6 md:px-10">
         <Reveal>
           <p className="mb-12 text-center text-xs uppercase tracking-[0.3em] text-ink-soft">
             {t.trusted.label}
           </p>
         </Reveal>
-        <div className="grid grid-cols-3 items-center gap-x-8 gap-y-10 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
-          {PARTNER_LOGOS.map((src, i) => (
-            <Reveal key={src} delay={(i % 8) * 0.04} className="flex justify-center">
+      </div>
+      <div className="group relative w-full overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_6%,#000_94%,transparent)]">
+        <motion.div
+          className="flex w-max items-center gap-8 md:gap-12"
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{ duration: 55, ease: "linear", repeat: Infinity }}
+        >
+          {row.map((src, i) => (
+            <div
+              key={i}
+              className="flex h-[5.5rem] shrink-0 items-center justify-center rounded-2xl bg-white px-7 shadow-[0_1px_3px_rgba(20,20,20,0.07)] ring-1 ring-ink/[0.06]"
+            >
               <img
                 src={src}
-                alt={t.trusted.alt(i + 1)}
+                alt={t.trusted.alt((i % CLINIC_LOGOS.length) + 1)}
                 loading="lazy"
-                className="h-14 w-auto max-w-[140px] object-contain opacity-70 grayscale transition hover:opacity-100 hover:grayscale-0"
+                className="h-9 w-auto max-w-[150px] object-contain opacity-90 transition group-hover:opacity-100"
                 onError={(e) => (e.currentTarget.style.visibility = "hidden")}
               />
-            </Reveal>
+            </div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
