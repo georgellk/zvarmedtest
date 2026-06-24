@@ -57,7 +57,7 @@ const MARK_AI_PHOTO = "https://svarmed.lkdm.uk/assets/product-mark.jpg";
 const DR_NIC_PHOTO = "https://svarmed.lkdm.uk/assets/product-nic.jpg";
 const SURGEONS_GRID = "https://svarmed.lkdm.uk/assets/catalog/svarmed-grid-surgeons.png";
 
-const CLINIC_LOGOS = Array.from({ length: 18 }, (_, i) =>
+const CLINIC_LOGOS = Array.from({ length: 19 }, (_, i) =>
   `https://svarmed.lkdm.uk/assets/catalog/logos/clinic_${String(i + 1).padStart(2, "0")}.png`,
 );
 
