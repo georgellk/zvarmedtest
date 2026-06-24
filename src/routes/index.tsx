@@ -594,6 +594,10 @@ const INSTRUMENT_ITEMS: { cat: string; name: string; img: string }[] = [
   { cat: "lor", name: "Електрод скальпель «серповидний»", img: "/assets/catalog/instruments/instr_28.jpg" },
   { cat: "laparo", name: "Лапароскопічний дисектор/граспер", img: "/assets/catalog/instruments/instr_29.jpg" },
   { cat: "kabeli", name: "Кабель силіконовий 3м для затискачів", img: "/assets/catalog/instruments/instr_30.jpg" },
+  { cat: "zatyskachi", name: "Затискач 140 мм", img: "/assets/catalog/instruments/instr_31.jpg" },
+  { cat: "nozhytsi", name: "Затискач-ножиці 270 мм", img: "/assets/catalog/instruments/instr_32.jpg" },
+  { cat: "nozhytsi", name: "Затискач-ножиці «підсилені» 220 мм", img: "/assets/catalog/instruments/instr_33.jpg" },
+  { cat: "pintsety", name: "Пінцет фігурний зігнутий 220 мм", img: "/assets/catalog/instruments/instr_34.jpg" },
 ];
 
 function CatalogOverlay({ openSlug, onClose }: { openSlug: string | null; onClose: () => void }) {
