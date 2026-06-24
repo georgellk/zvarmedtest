@@ -741,11 +741,11 @@ function About() {
             <div className="overflow-hidden rounded-3xl">
               <img
                 src={dnaOrb}
-                alt="SVARMED DNA"
-                width={800}
-                height={800}
+                alt="SVARMED Mark AI та dr.Nic — апарати біозварювання тканин"
+                width={1400}
+                height={1120}
                 loading="lazy"
-                className="aspect-square w-full object-cover"
+                className="aspect-[5/4] w-full object-cover"
               />
             </div>
           </Reveal>
